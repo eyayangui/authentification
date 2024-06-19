@@ -1,5 +1,6 @@
 package com.sofrecom.authentificationms.repository;
 
+import com.sofrecom.authentificationms.dto.CollaboratorDTO;
 import com.sofrecom.authentificationms.entity.Collaborator;
 import com.sofrecom.authentificationms.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +13,6 @@ public interface CollaboratorRepository extends JpaRepository<Collaborator , Int
     Optional<Collaborator> findByEmail(String email);
     List<Collaborator> findByRole(Role role);
     Optional<Collaborator> findById(Integer id);
+
 
 }

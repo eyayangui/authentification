@@ -35,32 +35,26 @@ class VehicleServiceTest {
     @Mock
     private VehicleMapper vehicleMapper;
 
-    private static VehicleDTO mockVehicleDto(Long id , String brand, String power, Integer nbSeat, String plateNumber, VehicleType vehicleType) {
+    private static VehicleDTO mockVehicleDto(Long id , String brand, String model) {
         VehicleDTO vehicleDTO = new VehicleDTO();
-        vehicleDTO.setIdVehicle(id);
+        vehicleDTO.setIdVehicule(id);
         vehicleDTO.setBrand(brand);
-        vehicleDTO.setPower(power);
-        vehicleDTO.setNumberSeat(nbSeat);
-        vehicleDTO.setPlateNumber(plateNumber);
-        vehicleDTO.setVehicleType(vehicleType);
+        vehicleDTO.setModel(model);
         return vehicleDTO ;
     }
 
-    private static Vehicle mockVehicle(Long id , String brand, String power, Integer nbSeat, String plateNumber, VehicleType vehicleType) {
+    private static Vehicle mockVehicle(Long id , String brand, String model) {
         Vehicle vehicle = new Vehicle();
         vehicle.setIdVehicule(id);
         vehicle.setBrand(brand);
-        vehicle.setPower(power);
-        vehicle.setNumberSeat(nbSeat);
-        vehicle.setPlateNumber(plateNumber);
-        vehicle.setVehicleType(vehicleType);
+        vehicle.setModel(model);
         return vehicle ;
     }
 
     @Test
     void testAddVehicleForCollaborator() {
         Integer collaboratorId = 1;
-        VehicleDTO vehicleDTO = mockVehicleDto(1L,"Toyota", "4C", 5 , "ABC123", VehicleType.CAR );
+        VehicleDTO vehicleDTO = mockVehicleDto(1L,"Toyota", "4C");
 
         Collaborator collaborator = new Collaborator();
         collaborator.setIdCollaborator(collaboratorId);
@@ -69,7 +63,7 @@ class VehicleServiceTest {
 
         Vehicle savedVehicle = new Vehicle();
         BeanUtils.copyProperties(vehicleDTO, savedVehicle);
-        savedVehicle.setCollaborator(collaborator);
+
 
         Mockito.when(vehicleRepository.save(any(Vehicle.class))).thenReturn(savedVehicle);
 
@@ -77,11 +71,7 @@ class VehicleServiceTest {
 
         assertNotNull(result);
         assertEquals(vehicleDTO.getBrand(), result.getBrand());
-        assertEquals(vehicleDTO.getPower(), result.getPower());
-        assertEquals(vehicleDTO.getNumberSeat(), result.getNumberSeat());
-        assertEquals(vehicleDTO.getPlateNumber(), result.getPlateNumber());
-        assertEquals(vehicleDTO.getVehicleType(), result.getVehicleType());
-        assertEquals(collaboratorId, result.getCollaborator().getIdCollaborator());
+        assertEquals(vehicleDTO.getModel(), result.getModel());
 
         verify(collaboratorRepository, times(1)).findById(collaboratorId);
         verify(vehicleRepository, times(1)).save(any(Vehicle.class));
@@ -90,7 +80,7 @@ class VehicleServiceTest {
     @Test
     void testAddVehicleForCollaboratorWhenCollaboratorNotFound() {
         Integer collaboratorId = 1;
-        VehicleDTO vehicleDTO = mockVehicleDto(1L , "Toyota", "4C", 5 , "ABC123", VehicleType.CAR );
+        VehicleDTO vehicleDTO = mockVehicleDto(1L , "Toyota", "4C");
 
         Mockito.when(collaboratorRepository.findById(collaboratorId)).thenReturn(Optional.empty());
 
@@ -107,9 +97,9 @@ class VehicleServiceTest {
     @Test
     public void testUpdateVehicle_Success() {
         Long vehicleId = 1L;
-        VehicleDTO vehicleDTO = mockVehicleDto(1L , "Toyota", "200hp", 5 , "ABC123", VehicleType.CAR );
+        VehicleDTO vehicleDTO = mockVehicleDto(1L , "Toyota", "200hp");
 
-        Vehicle existingVehicle = mockVehicle(1L , "Honda", "150hp", 4 , "XYZ789", VehicleType.CAR );
+        Vehicle existingVehicle = mockVehicle(1L , "Honda", "150hp");
 
 
         when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.of(existingVehicle));
@@ -118,10 +108,8 @@ class VehicleServiceTest {
         Vehicle updatedVehicle = vehicleService.updateVehicle(vehicleId, vehicleDTO);
 
         assertEquals(vehicleDTO.getBrand(), updatedVehicle.getBrand());
-        assertEquals(vehicleDTO.getPower(), updatedVehicle.getPower());
-        assertEquals(vehicleDTO.getNumberSeat(), updatedVehicle.getNumberSeat());
-        assertEquals(vehicleDTO.getPlateNumber(), updatedVehicle.getPlateNumber());
-        assertEquals(vehicleDTO.getVehicleType(), updatedVehicle.getVehicleType());
+        assertEquals(vehicleDTO.getModel(), updatedVehicle.getModel());
+
 
         verify(vehicleRepository, times(1)).findById(vehicleId);
         verify(vehicleRepository, times(1)).save(existingVehicle);
@@ -130,7 +118,7 @@ class VehicleServiceTest {
     @Test
     void testUpdateVehicleWhenVehicleNotFound() {
         Long vehicleId = 1L;
-        VehicleDTO vehicleDTO = mockVehicleDto(1L , "Toyota", "4C", 5 , "ABC123", VehicleType.CAR );
+        VehicleDTO vehicleDTO = mockVehicleDto(1L , "Toyota", "4C");
 
         Mockito.when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.empty());
 
@@ -143,29 +131,6 @@ class VehicleServiceTest {
         verify(vehicleRepository, never()).save(any(Vehicle.class));
     }
 
-    @Test
-    void testGetAllVehicleDTOsForCollaborator() {
-        Integer collaboratorId = 1;
-
-        Vehicle vehicle1 = mockVehicle(1L , "Toyota", "4C", 5 , "ABC123", VehicleType.CAR );
-        Vehicle vehicle2 = mockVehicle(2L , "Honda", "120hp", 4 , "XYZ456", VehicleType.CAR );
-
-        when(vehicleRepository.findByCollaboratorId(collaboratorId)).thenReturn(Arrays.asList(vehicle1, vehicle2));
-
-        VehicleDTO vehicleDTO1 = mockVehicleDto(1L , "Toyota", "4C", 5 , "ABC123", VehicleType.CAR );
-        VehicleDTO vehicleDTO2 = mockVehicleDto(2L , "Honda", "120hp", 5 , "ABC123", VehicleType.CAR );
-
-        when(vehicleMapper.mapVehicleToDTO(vehicle1)).thenReturn(vehicleDTO1);
-        when(vehicleMapper.mapVehicleToDTO(vehicle2)).thenReturn(vehicleDTO2);
-
-        List<VehicleDTO> result = vehicleService.getAllVehicleDTOsForCollaborator(collaboratorId);
-
-        assertEquals(2, result.size());
-        assertEquals(vehicleDTO1, result.get(0));
-        assertEquals(vehicleDTO2, result.get(1));
-
-        verify(vehicleRepository).findByCollaboratorId(collaboratorId);
-    }
 
     @Test
     void testDeleteVehicleById() {

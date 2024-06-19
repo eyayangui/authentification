@@ -44,7 +44,7 @@ class CollaboratorServiceTest {
     public void setUp() {
         collaboratorRepository = mock(CollaboratorRepository.class);
         collaboratorMapper = new CollaboratorMapper();
-        collaboratorService = new CollaboratorService(collaboratorRepository, collaboratorMapper);
+       /* collaboratorService = new CollaboratorService(collaboratorRepository, collaboratorMapper);*/
     }
 
     @Test
@@ -93,12 +93,12 @@ class CollaboratorServiceTest {
 
         when(collaboratorRepository.findById(id)).thenReturn(Optional.of(existingCollaborator));
         when(collaboratorRepository.save(existingCollaborator)).thenReturn(updatedCollaborator);
-        Collaborator result1 = collaboratorService.updateCollaborator(id, updatedCollaboratorDto);
+        CollaboratorDTO result1 = collaboratorService.updateCollaborator(id, updatedCollaboratorDto);
         assertEquals(updatedCollaborator, result1);
 
         int nonExistingId = 999;
         when(collaboratorRepository.findById(nonExistingId)).thenReturn(Optional.empty());
-        Collaborator result2 = collaboratorService.updateCollaborator(nonExistingId, updatedCollaboratorDto);
+        CollaboratorDTO result2 = collaboratorService.updateCollaborator(nonExistingId, updatedCollaboratorDto);
         assertNull(result2);
     }
 

@@ -18,4 +18,7 @@ public class AuthenticationResponse {
     private String refreshToken;*/
     @JsonProperty("role")
     private String role;
+
+    @JsonProperty("idCollaborator")
+    private Integer idCollaborator ;
 }

@@ -1,11 +1,9 @@
 package com.sofrecom.authentificationms.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
 
 @Data
 @Builder
@@ -36,16 +36,32 @@ public class Collaborator implements UserDetails {
     private String gender;
     private String birthDate;
     private String adress;
+    private String minibio;
     private Integer bonus;
+    @Column(name = "file_name")
+    private String fileName;
+
+    @Lob
+    @Column(name = "data_image", columnDefinition = "LONGBLOB")
+    private byte[] data;
+
+    public Collaborator(String fileName, byte[] data) {
+        this.fileName = fileName;
+        this.data = data;
+    }
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "collaborator", cascade = CascadeType.ALL)
+    /*@OneToMany(mappedBy = "collaborator", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Vehicle> vehicles;
+    private List<Vehicle> vehicles;*/
+    @OneToMany(mappedBy = "collaborator", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private Set<CollaboratorVehicle> vehicles;
 
     @OneToMany(mappedBy = "collaborator", cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private List<Token> tokens;
 
     public boolean visibilityKpi() {

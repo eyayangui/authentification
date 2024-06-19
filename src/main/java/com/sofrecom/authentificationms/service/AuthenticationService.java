@@ -43,6 +43,7 @@ public class AuthenticationService {
                 .accessToken(jwtToken)
 //                .refreshToken(refreshToken)
                 .role(user.getRole().name())
+                .idCollaborator(user.getIdCollaborator())
                 .build();
     }
 

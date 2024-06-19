@@ -12,23 +12,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype")
 public class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idVehicule ;
     private String brand ;
-    private String power ;
-    private Integer numberSeat ;
-    @Column(unique = true)
-    private String plateNumber;
+    private String model ;
 
     @Enumerated(EnumType.STRING)
     private VehicleType vehicleType ;
-
-    @ManyToOne
-    @JoinColumn(name = "collaborator_id")
-    @JsonIgnore
-    private Collaborator collaborator ;
 
 }
